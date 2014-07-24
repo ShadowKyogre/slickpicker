@@ -211,7 +211,10 @@ class QColorEdit(QtGui.QWidget):
 			self.spinColEdit.setOption(QtGui.QColorDialog.DontUseNativeDialog)
 			self.spinColEdit.setOption(QtGui.QColorDialog.NoButtons)
 		self.spinColEdit.setWindowFlags(QtCore.Qt.Popup)
-		self._color = QtGui.QColor()
+		if isinstance(color, QtGui.QColor):
+			self._color = color
+		else:
+			self._color = QtGui.QColor()
 		self._picking = False
 
 		self.previewPanel.clicked.connect(self._toggleHsv)
