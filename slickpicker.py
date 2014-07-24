@@ -258,7 +258,7 @@ class QColorEdit(QtGui.QWidget):
 			self.spinColEdit.move(bottom_corner, pop_here)
 			self.previewPanel.setText("▼")
 		else:
-			print("e")
+			#print("e")
 			self.spinColEdit.hide()
 			self.previewPanel.setText("▶")
 
