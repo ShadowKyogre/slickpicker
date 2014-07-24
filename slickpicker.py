@@ -200,6 +200,7 @@ class QColorEdit(QtGui.QWidget):
 		
 		self.previewPanel = QtGui.QPushButton()
 		self.picky = QtGui.QPushButton()
+		self.picky.setText("Pick from screen")
 		self.previewPanel.setCheckable(True)
 		self.previewPanel.setText("▶")
 		self.colorEdit = QColorLineEdit()
@@ -282,7 +283,10 @@ class QColorEdit(QtGui.QWidget):
 		img = pixmap.toImage()
 		col = QtGui.QColor(img.pixel(0,0))
 		self.colorEdit.setColor(col)
-		self.spinColEdit.setColor(col)
+		if isinstance(self.spinColEdit,QColorSpinEdit):
+			self.spinColEdit.setColor(col)
+		else:
+			self.spinColEdit.setCurrentColor(col)
 		self.setColor(col)
 
 	def eventFilter(self, source, event):
