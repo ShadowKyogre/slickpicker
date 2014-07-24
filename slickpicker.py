@@ -3,6 +3,7 @@ import re
 import sys
 
 COLOR_RE = re.compile(r'(#[0-9a-fA-F]{3})([0-9a-fA-F]{3})?')
+COLOR_NAMES = QtGui.QColor.colorNames()
 
 class QColorValidator(QtGui.QValidator):
 	def __init__(self, parent=None):
@@ -28,7 +29,7 @@ class QColorValidator(QtGui.QValidator):
 			elif text_len < 4 and text[0] == '#':
 				return (QtGui.QValidator.Intermediate, text, pos)
 			partial = re.compile(re.escape(text[:pos]))
-			for named_col in QtGui.QColor.colorNames():
+			for named_col in COLOR_NAMES:
 				match = partial.match(named_col)
 				if match is not None:
 					if match.string == text:
@@ -72,9 +73,10 @@ class QColorLineEdit(QtGui.QLineEdit):
 		super().__init__(parent)
 		#self.clicked.connect(lambda x: self.adjustColor())
 		self.textChanged.connect(self.adjustColor)
-		cmpl = QtGui.QCompleter()
-		cmpl.setModel(QtGui.QStringListModel(QtGui.QColor.colorNames()))
-		self.setCompleter(cmpl)
+		self._cmpl = QtGui.QCompleter()
+		self._model = QtGui.QStringListModel(COLOR_NAMES)
+		self._cmpl.setModel(self._model)
+		self.setCompleter(self._cmpl)
 
 		if isinstance(color,QtGui.QColor):
 			self.setColor(color)
@@ -228,6 +230,7 @@ class QColorEdit(QtGui.QWidget):
 		#print(self.sender())
 		if self.sender() is self.colorEdit:
 			self.spinColEdit._syncSliders(c)
+			self.spinColEdit._color=c
 		elif self.sender() is self.spinColEdit:
 			self.colorEdit.setColor(c)
 
