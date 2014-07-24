@@ -231,16 +231,18 @@ class QColorEdit(QtGui.QWidget):
 		self.colorChanged.connect(self._updatePreview)
 		self.spinColEdit.installEventFilter(self)
 
-		layout.addWidget(self.colorEdit,0,0,1,4)
-		#layout.addWidget(self.spinColEdit,1,0,1,5)
-		layout.addWidget(self.previewPanel,0,5,1,1)
-		layout.addWidget(self.picky,0,4,1,1)
-		self._updatePreview(self.color)
+		layout.addWidget(self.colorEdit,0,0,1,1)
+		layout.addWidget(self.picky,0,1,1,1)
+		layout.addWidget(self.previewPanel,0,2,1,1)
+		if not useQColorDialog:
+			self._updatePreview(self.color)
+		else:
+			self.spinColEdit.setCurrentColor(self.color)
 
 	def _syncWidgets(self, c):
 		#print(self.sender())
 		if self.sender() is self.colorEdit:
-			if isinstance(self.colorEdit, QColorSpinEdit):
+			if isinstance(self.spinColEdit, QColorSpinEdit):
 				self.spinColEdit._syncSliders(c)
 				self.spinColEdit._color=c
 			else:
