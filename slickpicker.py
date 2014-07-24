@@ -254,7 +254,7 @@ class QColorEdit(QtGui.QWidget):
 			bottom_margin = self.layout().contentsMargins().bottom()
 			bottom_corner= really_here.x()-self.spinColEdit.width()
 			pop_here = really_here.y()-bottom_margin
-			print(bottom_corner, pop_here, self.height(), really_here.y(), bottom_margin)
+			#print(bottom_corner, pop_here, self.height(), really_here.y(), bottom_margin)
 			self.spinColEdit.move(bottom_corner, pop_here)
 			self.previewPanel.setText("▼")
 		else:
