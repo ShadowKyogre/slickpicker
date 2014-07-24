@@ -1,5 +1,6 @@
 from PyQt4 import QtCore,QtGui
 import re
+import sys
 
 COLOR_RE = re.compile(r'(#[0-9a-fA-F]{3})([0-9a-fA-F]{3})?')
 
@@ -238,7 +239,7 @@ class QColorEdit(QtGui.QWidget):
 	def _pickColor(self, pos):
 		pixmap = QtGui.QPixmap.grabWindow(QtGui.QApplication.desktop().winId(), pos.x(), pos.y(), 1, 1)
 		img = pixmap.toImage()
-		self.setColor(QtGui.QColor(img.pixel(0,0)))
+		self.colorEdit.setColor(QtGui.QColor(img.pixel(0,0)))
 
 	def eventFilter(self, source, event):
 		if source is self.spinColEdit and event.type() in (QtCore.QEvent.Close, QtCore.QEvent.Hide, QtCore.QEvent.HideToParent):
@@ -279,16 +280,9 @@ class QColorEdit(QtGui.QWidget):
 	color = QtCore.pyqtProperty('QColor', fget=color, fset=setColor)
 
 if __name__ == "__main__":
-	app=QtGui.QApplication([])
-	#dip=QSpinSlider()
-	a=QtGui.QWidget()
-	layout=QtGui.QVBoxLayout(a)
-	stuff=QColorEdit()
-	#stuff2=QColorEdit()
-	#stuff3=QColorEdit()
-	layout.addWidget(stuff)
-	#layout.addWidget(stuff2)
-	#layout.addWidget(stuff3)
-	#dip.show()
-	a.show()
-	exit(app.exec())
+	app=QtGui.QApplication(sys.argv)
+	picker=QColorEdit()
+	picker.show()
+	retcode = app.exec()
+	print(picker.colorEdit.text())
+	exit(retcode)
