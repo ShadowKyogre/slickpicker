@@ -194,7 +194,7 @@ class QColorSpinEdit(QtGui.QWidget):
 class QColorEdit(QtGui.QWidget):
 	colorChanged = QtCore.pyqtSignal('QColor')
 
-	def __init__(self, color=None, parent=None):
+	def __init__(self, color=None, parent=None, useQColorDialog=True):
 		super().__init__(parent)
 		layout = QtGui.QGridLayout(self)
 		
@@ -203,7 +203,12 @@ class QColorEdit(QtGui.QWidget):
 		self.previewPanel.setCheckable(True)
 		self.previewPanel.setText("▶")
 		self.colorEdit = QColorLineEdit()
-		self.spinColEdit = QColorSpinEdit(self)
+		if not useQColorDialog:
+			self.spinColEdit = QColorSpinEdit(self)
+		else:
+			self.spinColEdit = QtGui.QColorDialog(self)
+			self.spinColEdit.setOption(QtGui.QColorDialog.DontUseNativeDialog)
+			self.spinColEdit.setOption(QtGui.QColorDialog.NoButtons)
 		self.spinColEdit.setWindowFlags(QtCore.Qt.Popup)
 		self._color = QtGui.QColor()
 		self._picking = False
@@ -212,9 +217,14 @@ class QColorEdit(QtGui.QWidget):
 		self.picky.clicked.connect(self._preparePicking)
 
 		self.colorEdit.colorChanged.connect(self._syncWidgets)
-		self.spinColEdit.colorChanged.connect(self._syncWidgets)
 		self.colorEdit.colorChanged.connect(self.setColor)
-		self.spinColEdit.colorChanged.connect(self.setColor)
+		
+		if not useQColorDialog:
+			self.spinColEdit.colorChanged.connect(self._syncWidgets)
+			self.spinColEdit.colorChanged.connect(self.setColor)
+		else:
+			self.spinColEdit.currentColorChanged.connect(self._syncWidgets)
+			self.spinColEdit.currentColorChanged.connect(self.setColor)
 		#self.spinColEdit.colorChanged.connect(self.colorEdit.setColor)
 
 		self.colorChanged.connect(self._updatePreview)
@@ -229,8 +239,11 @@ class QColorEdit(QtGui.QWidget):
 	def _syncWidgets(self, c):
 		#print(self.sender())
 		if self.sender() is self.colorEdit:
-			self.spinColEdit._syncSliders(c)
-			self.spinColEdit._color=c
+			if isinstance(self.colorEdit, QColorSpinEdit):
+				self.spinColEdit._syncSliders(c)
+				self.spinColEdit._color=c
+			else:
+				self.spinColEdit.setCurrentColor(c)
 		elif self.sender() is self.spinColEdit:
 			self.colorEdit.setColor(c)
 
