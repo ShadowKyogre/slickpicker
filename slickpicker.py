@@ -203,7 +203,7 @@ class QColorEdit(QtGui.QWidget):
 		self.picky.setText("Pick from screen")
 		self.previewPanel.setCheckable(True)
 		self.previewPanel.setText("▶")
-		self.colorEdit = QColorLineEdit()
+		self.lineEdit = QColorLineEdit()
 		if not useQColorDialog:
 			self.spinColEdit = QColorSpinEdit(self)
 		else:
@@ -213,6 +213,8 @@ class QColorEdit(QtGui.QWidget):
 		self.spinColEdit.setWindowFlags(QtCore.Qt.Popup)
 		if isinstance(color, QtGui.QColor):
 			self._color = color
+		elif isinstance(color, str):
+			self._color = QtGui.QColor(color)
 		else:
 			self._color = QtGui.QColor()
 		self._picking = False
@@ -220,8 +222,8 @@ class QColorEdit(QtGui.QWidget):
 		self.previewPanel.clicked.connect(self._toggleHsv)
 		self.picky.clicked.connect(self._preparePicking)
 
-		self.colorEdit.colorChanged.connect(self._syncWidgets)
-		self.colorEdit.colorChanged.connect(self.setColor)
+		self.lineEdit.colorChanged.connect(self._syncWidgets)
+		self.lineEdit.colorChanged.connect(self.setColor)
 		
 		if not useQColorDialog:
 			self.spinColEdit.colorChanged.connect(self._syncWidgets)
@@ -229,12 +231,12 @@ class QColorEdit(QtGui.QWidget):
 		else:
 			self.spinColEdit.currentColorChanged.connect(self._syncWidgets)
 			self.spinColEdit.currentColorChanged.connect(self.setColor)
-		#self.spinColEdit.colorChanged.connect(self.colorEdit.setColor)
+		#self.spinColEdit.colorChanged.connect(self.lineEdit.setColor)
 
 		self.colorChanged.connect(self._updatePreview)
 		self.spinColEdit.installEventFilter(self)
 
-		layout.addWidget(self.colorEdit,0,0,1,1)
+		layout.addWidget(self.lineEdit,0,0,1,1)
 		layout.addWidget(self.picky,0,1,1,1)
 		layout.addWidget(self.previewPanel,0,2,1,1)
 		if not useQColorDialog:
@@ -244,14 +246,14 @@ class QColorEdit(QtGui.QWidget):
 
 	def _syncWidgets(self, c):
 		#print(self.sender())
-		if self.sender() is self.colorEdit:
+		if self.sender() is self.lineEdit:
 			if isinstance(self.spinColEdit, QColorSpinEdit):
 				self.spinColEdit._syncSliders(c)
 				self.spinColEdit._color=c
 			else:
 				self.spinColEdit.setCurrentColor(c)
 		elif self.sender() is self.spinColEdit:
-			self.colorEdit.setColor(c)
+			self.lineEdit.setColor(c)
 
 	def _preparePicking(self, event):
 		self._picking = True
@@ -287,7 +289,7 @@ class QColorEdit(QtGui.QWidget):
 		pixmap = QtGui.QPixmap.grabWindow(QtGui.QApplication.desktop().winId(), pos.x(), pos.y(), 1, 1)
 		img = pixmap.toImage()
 		col = QtGui.QColor(img.pixel(0,0))
-		self.colorEdit.setColor(col)
+		self.lineEdit.setColor(col)
 		if isinstance(self.spinColEdit,QColorSpinEdit):
 			self.spinColEdit.setColor(col)
 		else:
