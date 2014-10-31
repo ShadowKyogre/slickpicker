@@ -1,6 +1,5 @@
 from PyQt4 import QtCore,QtGui
 import re
-import sys
 
 COLOR_RE = re.compile(r'(#[0-9a-fA-F]{3})([0-9a-fA-F]{3})?')
 COLOR_NAMES = QtGui.QColor.colorNames()
@@ -330,11 +329,3 @@ class QColorEdit(QtGui.QWidget):
 		self.colorChanged.emit(color)
 
 	color = QtCore.pyqtProperty('QColor', fget=color, fset=setColor)
-
-if __name__ == "__main__":
-	app=QtGui.QApplication(sys.argv)
-	picker=QColorEdit()
-	picker.show()
-	retcode = app.exec()
-	print(picker.colorEdit.text())
-	exit(retcode)
