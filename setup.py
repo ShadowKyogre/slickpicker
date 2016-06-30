@@ -26,7 +26,7 @@ setup(
 	description = DESCRIPTION,
 	url = PAGE,
 	license = "GPLv3",
-    requires=['PyQt'],
+	requires=['PyQt'],
 	py_modules = ['slickpicker'],
 	scripts=['slickpicker']
 )
