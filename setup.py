@@ -8,7 +8,7 @@ import os, glob, sys
 # and declare them here
 
 APPNAME='slickpicker'
-APPVERSION='0.1'
+APPVERSION='0.2'
 AUTHOR='ShadowKyogre'
 EMAIL='shadowkyogre.public@gmail.com'
 DESCRIPTION='A small PyQt color picker widget (can be run on its own)'
@@ -26,7 +26,7 @@ setup(
 	description = DESCRIPTION,
 	url = PAGE,
 	license = "GPLv3",
-	requires=['PyQt'],
+	requires=['PyQt5'],
 	py_modules = ['slickpicker'],
 	scripts=['slickpicker']
 )

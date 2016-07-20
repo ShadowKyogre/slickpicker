@@ -1,4 +1,4 @@
-from PyQt4 import QtCore,QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 import re
 
 COLOR_RE = re.compile(r'(#[0-9a-fA-F]{3})([0-9a-fA-F]{3})?')
@@ -37,26 +37,26 @@ class QColorValidator(QtGui.QValidator):
 						return (QtGui.QValidator.Intermediate, text, pos)
 		return (QtGui.QValidator.Invalid, text, pos)
 
-class QSpinSlider(QtGui.QWidget):
+class QSpinSlider(QtWidgets.QWidget):
 	def __init__(self, parent=None, slider=None, spinner=None):
 		super().__init__(parent)
 
 		if slider is None:
-			self.slider = QtGui.QSlider()
+			self.slider = QtWidgets.QSlider()
 			self.slider.setOrientation(QtCore.Qt.Horizontal)
 		else:
 			self.slider = slider
 
 		if spinner is None:
-			self.spinner = QtGui.QSpinBox()
+			self.spinner = QtWidgets.QSpinBox()
 		else:
 			self.spinner = spinner
 
 		if self.slider.orientation() == QtCore.Qt.Horizontal:
-			layout = QtGui.QHBoxLayout(self)
+			layout = QtWidgets.QHBoxLayout(self)
 			layout.addWidget(self.slider, alignment = QtCore.Qt.AlignVCenter)
 		else:
-			layout = QtGui.QVBoxLayout(self)
+			layout = QtWidgets.QVBoxLayout(self)
 			layout.addWidget(self.slider, alignment = QtCore.Qt.AlignHCenter)
 
 		layout.addWidget(self.spinner, alignment = QtCore.Qt.AlignHCenter)
@@ -65,15 +65,15 @@ class QSpinSlider(QtGui.QWidget):
 		self.spinner.valueChanged.connect(self.slider.setValue)
 		self.slider.rangeChanged.connect(self.spinner.setRange)
 
-class QColorLineEdit(QtGui.QLineEdit):
+class QColorLineEdit(QtWidgets.QLineEdit):
 	colorChanged = QtCore.pyqtSignal('QColor')
 
 	def __init__(self, color=None, parent=None):
 		super().__init__(parent)
 		#self.clicked.connect(lambda x: self.adjustColor())
 		self.textChanged.connect(self.adjustColor)
-		self._cmpl = QtGui.QCompleter()
-		self._model = QtGui.QStringListModel(COLOR_NAMES)
+		self._cmpl = QtWidgets.QCompleter()
+		self._model = QtCore.QStringListModel(COLOR_NAMES)
 		self._cmpl.setModel(self._model)
 		self.setCompleter(self._cmpl)
 
@@ -107,11 +107,11 @@ class QColorLineEdit(QtGui.QLineEdit):
 	
 	color = QtCore.pyqtProperty('QColor', fget=color, fset=setColor)
 
-class QColorSpinEdit(QtGui.QWidget):
+class QColorSpinEdit(QtWidgets.QWidget):
 	colorChanged = QtCore.pyqtSignal('QColor')
 	def __init__(self, color=None, parent=None):
 		super().__init__(parent)
-		layout = QtGui.QFormLayout(self)
+		layout = QtWidgets.QFormLayout(self)
 
 		self.HEdit = QSpinSlider()
 		self.SEdit = QSpinSlider()
@@ -190,15 +190,15 @@ class QColorSpinEdit(QtGui.QWidget):
 
 	color = QtCore.pyqtProperty('QColor', fget=color, fset=setColor)
 
-class QColorEdit(QtGui.QWidget):
+class QColorEdit(QtWidgets.QWidget):
 	colorChanged = QtCore.pyqtSignal('QColor')
 
 	def __init__(self, color=None, parent=None, useQColorDialog=True):
 		super().__init__(parent)
-		layout = QtGui.QGridLayout(self)
+		layout = QtWidgets.QGridLayout(self)
 		
-		self.previewPanel = QtGui.QPushButton()
-		self.picky = QtGui.QPushButton()
+		self.previewPanel = QtWidgets.QPushButton()
+		self.picky = QtWidgets.QPushButton()
 		self.picky.setText("Pick from screen")
 		self.previewPanel.setCheckable(True)
 		self.previewPanel.setText("▶")
@@ -206,9 +206,9 @@ class QColorEdit(QtGui.QWidget):
 		if not useQColorDialog:
 			self.spinColEdit = QColorSpinEdit(self)
 		else:
-			self.spinColEdit = QtGui.QColorDialog(self)
-			self.spinColEdit.setOption(QtGui.QColorDialog.DontUseNativeDialog)
-			self.spinColEdit.setOption(QtGui.QColorDialog.NoButtons)
+			self.spinColEdit = QtWidgets.QColorDialog(self)
+			self.spinColEdit.setOption(QtWidgets.QColorDialog.DontUseNativeDialog)
+			self.spinColEdit.setOption(QtWidgets.QColorDialog.NoButtons)
 		self.spinColEdit.setWindowFlags(QtCore.Qt.Popup)
 		if isinstance(color, QtGui.QColor):
 			self._color = color
@@ -263,7 +263,7 @@ class QColorEdit(QtGui.QWidget):
 		if self._picking:
 			self._pickColor(event.globalPos())
 			return
-		return QtGui.QWidget.mouseMoveEvent(self, event)
+		return QtWidgets.QWidget.mouseMoveEvent(self, event)
 
 	def keyPressEvent(self, event):
 		if self._picking:
@@ -273,7 +273,7 @@ class QColorEdit(QtGui.QWidget):
 				self.releaseMouse()
 			event.accept()
 			return
-		return QtGui.QWidget.keyPressEvent(self, event)
+		return QtWidgets.QWidget.keyPressEvent(self, event)
 
 	def mouseReleaseEvent(self, event):
 		if self._picking:
@@ -282,10 +282,16 @@ class QColorEdit(QtGui.QWidget):
 			self.releaseMouse()
 			self._pickColor(event.globalPos())
 			return
-		return QtGui.QWidget.mouseReleaseEvent(self, event)
+		return QtWidgets.QWidget.mouseReleaseEvent(self, event)
 
 	def _pickColor(self, pos):
-		pixmap = QtGui.QPixmap.grabWindow(QtGui.QApplication.desktop().winId(), pos.x(), pos.y(), 1, 1)
+		desktop = QtWidgets.QApplication.desktop().winId()
+		screen = QtWidgets.QApplication.primaryScreen()
+		pixmap = screen.grabWindow(
+			desktop,
+			pos.x(), pos.y(),
+			1, 1
+		)
 		img = pixmap.toImage()
 		col = QtGui.QColor(img.pixel(0,0))
 		self.lineEdit.setColor(col)
@@ -299,7 +305,7 @@ class QColorEdit(QtGui.QWidget):
 		if source is self.spinColEdit and event.type() in (QtCore.QEvent.Close, QtCore.QEvent.Hide, QtCore.QEvent.HideToParent):
 			self.previewPanel.setChecked(False)
 			self.previewPanel.setText("▶")
-		return QtGui.QWidget.eventFilter(self, source, event)
+		return QtWidgets.QWidget.eventFilter(self, source, event)
 
 	def _toggleHsv(self, checked):
 		if checked:
