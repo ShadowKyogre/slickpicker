@@ -11,7 +11,7 @@ class QColorValidator(QtGui.QValidator):
 	def validate(self, text, pos):
 		portion = text
 		matchy = COLOR_RE.match(portion)
-		text_len=len(text)
+		text_len = len(text)
 		#print(matchy, text)
 		if matchy is not None:
 			if matchy.group(1) == portion and text_len == 4:
@@ -54,13 +54,13 @@ class QSpinSlider(QtWidgets.QWidget):
 
 		if self.slider.orientation() == QtCore.Qt.Horizontal:
 			layout = QtWidgets.QHBoxLayout(self)
-			layout.addWidget(self.slider, alignment = QtCore.Qt.AlignVCenter)
+			layout.addWidget(self.slider, alignment=QtCore.Qt.AlignVCenter)
 		else:
 			layout = QtWidgets.QVBoxLayout(self)
-			layout.addWidget(self.slider, alignment = QtCore.Qt.AlignHCenter)
+			layout.addWidget(self.slider, alignment=QtCore.Qt.AlignHCenter)
 
-		layout.addWidget(self.spinner, alignment = QtCore.Qt.AlignHCenter)
-		
+		layout.addWidget(self.spinner, alignment=QtCore.Qt.AlignHCenter)
+
 		self.slider.valueChanged.connect(self.spinner.setValue)
 		self.spinner.valueChanged.connect(self.slider.setValue)
 		self.slider.rangeChanged.connect(self.spinner.setRange)
@@ -77,12 +77,12 @@ class QColorLineEdit(QtWidgets.QLineEdit):
 		self._cmpl.setModel(self._model)
 		self.setCompleter(self._cmpl)
 
-		if isinstance(color,QtGui.QColor):
+		if isinstance(color, QtGui.QColor):
 			self.setColor(color)
 		else:
 			self.setColor(QtGui.QColor())
 		self.setValidator(QColorValidator())
-	
+
 	def adjustColor(self, text):
 		if self.hasAcceptableInput():
 			#print("Updating color display with", text)
@@ -91,9 +91,9 @@ class QColorLineEdit(QtWidgets.QLineEdit):
 
 	def color(self):
 		return self._color
-	
-	def setColor(self,color):
-		if isinstance(color,QtGui.QColor):
+
+	def setColor(self, color):
+		if isinstance(color, QtGui.QColor):
 			#print(color.name())
 			self._color = color
 			self.setText(color.name())
@@ -104,7 +104,7 @@ class QColorLineEdit(QtWidgets.QLineEdit):
 			self.colorChanged.emit(self._color)
 		else:
 			raise ValueError("That isn't a QColor!")
-	
+
 	color = QtCore.pyqtProperty('QColor', fget=color, fset=setColor)
 
 class QColorSpinEdit(QtWidgets.QWidget):
@@ -116,18 +116,18 @@ class QColorSpinEdit(QtWidgets.QWidget):
 		self.HEdit = QSpinSlider()
 		self.SEdit = QSpinSlider()
 		self.VEdit = QSpinSlider()
-		
+
 		self.REdit = QSpinSlider()
 		self.GEdit = QSpinSlider()
 		self.BEdit = QSpinSlider()
-		
-		self.HEdit.slider.setRange(0,359)
-		self.SEdit.slider.setRange(0,255)
-		self.VEdit.slider.setRange(0,255)
-		
-		self.REdit.slider.setRange(0,255)
-		self.GEdit.slider.setRange(0,255)
-		self.BEdit.slider.setRange(0,255)
+
+		self.HEdit.slider.setRange(0, 359)
+		self.SEdit.slider.setRange(0, 255)
+		self.VEdit.slider.setRange(0, 255)
+
+		self.REdit.slider.setRange(0, 255)
+		self.GEdit.slider.setRange(0, 255)
+		self.BEdit.slider.setRange(0, 255)
 
 		self.HEdit.slider.valueChanged.connect(self._makeHSVColor)
 		self.SEdit.slider.valueChanged.connect(self._makeHSVColor)
@@ -151,9 +151,11 @@ class QColorSpinEdit(QtWidgets.QWidget):
 	def _makeRGBColor(self, val):
 		if self._bup is False:
 			self._bup = True
-			color = QtGui.QColor.fromRgb(self.REdit.slider.value(),
-						self.GEdit.slider.value(),
-						self.BEdit.slider.value())
+			color = QtGui.QColor.fromRgb(
+				self.REdit.slider.value(),
+				self.GEdit.slider.value(),
+				self.BEdit.slider.value()
+			)
 			self.HEdit.slider.setValue(color.hue())
 			self.SEdit.slider.setValue(color.saturation())
 			self.VEdit.slider.setValue(color.value())
@@ -183,7 +185,7 @@ class QColorSpinEdit(QtWidgets.QWidget):
 
 	def color(self):
 		return self._color
-	
+
 	def setColor(self, color):
 		self._color = color
 		self.colorChanged.emit(color)
@@ -196,7 +198,7 @@ class QColorEdit(QtWidgets.QWidget):
 	def __init__(self, color=None, parent=None, useQColorDialog=True):
 		super().__init__(parent)
 		layout = QtWidgets.QGridLayout(self)
-		
+
 		self.previewPanel = QtWidgets.QPushButton()
 		self.picky = QtWidgets.QPushButton()
 		self.picky.setText("Pick from screen")
@@ -223,7 +225,7 @@ class QColorEdit(QtWidgets.QWidget):
 
 		self.lineEdit.colorChanged.connect(self._syncWidgets)
 		self.lineEdit.colorChanged.connect(self.setColor)
-		
+
 		if not useQColorDialog:
 			self.spinColEdit.colorChanged.connect(self._syncWidgets)
 			self.spinColEdit.colorChanged.connect(self.setColor)
@@ -235,9 +237,22 @@ class QColorEdit(QtWidgets.QWidget):
 		self.colorChanged.connect(self._updatePreview)
 		self.spinColEdit.installEventFilter(self)
 
-		layout.addWidget(self.lineEdit,0,0,1,1)
-		layout.addWidget(self.picky,0,1,1,1)
-		layout.addWidget(self.previewPanel,0,2,1,1)
+		layout.addWidget(
+			self.lineEdit,
+			0, 0,
+			1, 1
+		)
+
+		layout.addWidget(
+			self.picky,
+			0, 1,
+			1, 1
+		)
+		layout.addWidget(
+			self.previewPanel,
+			0, 2,
+			1, 1
+		)
 		if not useQColorDialog:
 			self._updatePreview(self.color)
 		else:
@@ -248,7 +263,7 @@ class QColorEdit(QtWidgets.QWidget):
 		if self.sender() is self.lineEdit:
 			if isinstance(self.spinColEdit, QColorSpinEdit):
 				self.spinColEdit._syncSliders(c)
-				self.spinColEdit._color=c
+				self.spinColEdit._color = c
 			else:
 				self.spinColEdit.setCurrentColor(c)
 		elif self.sender() is self.spinColEdit:
@@ -293,16 +308,21 @@ class QColorEdit(QtWidgets.QWidget):
 			1, 1
 		)
 		img = pixmap.toImage()
-		col = QtGui.QColor(img.pixel(0,0))
+		col = QtGui.QColor(img.pixel(0, 0))
 		self.lineEdit.setColor(col)
-		if isinstance(self.spinColEdit,QColorSpinEdit):
+		if isinstance(self.spinColEdit, QColorSpinEdit):
 			self.spinColEdit.setColor(col)
 		else:
 			self.spinColEdit.setCurrentColor(col)
 		self.setColor(col)
 
 	def eventFilter(self, source, event):
-		if source is self.spinColEdit and event.type() in (QtCore.QEvent.Close, QtCore.QEvent.Hide, QtCore.QEvent.HideToParent):
+		important_events = {
+			QtCore.QEvent.Close,
+			QtCore.QEvent.Hide,
+			QtCore.QEvent.HideToParent,
+		}
+		if source is self.spinColEdit and event.type() in important_events:
 			self.previewPanel.setChecked(False)
 			self.previewPanel.setText("▶")
 		return QtWidgets.QWidget.eventFilter(self, source, event)
@@ -312,8 +332,8 @@ class QColorEdit(QtWidgets.QWidget):
 			self.spinColEdit.show()
 			really_here = self.mapToGlobal(self.rect().bottomRight())
 			bottom_margin = self.layout().contentsMargins().bottom()
-			bottom_corner= really_here.x()-self.spinColEdit.width()
-			pop_here = really_here.y()-bottom_margin
+			bottom_corner = really_here.x() - self.spinColEdit.width()
+			pop_here = really_here.y() - bottom_margin
 			#print(bottom_corner, pop_here, self.height(), really_here.y(), bottom_margin)
 			self.spinColEdit.move(bottom_corner, pop_here)
 			self.previewPanel.setText("▼")
@@ -323,13 +343,13 @@ class QColorEdit(QtWidgets.QWidget):
 			self.previewPanel.setText("▶")
 
 	def _updatePreview(self, color):
-		px=QtGui.QPixmap(128,128)
+		px = QtGui.QPixmap(128, 128)
 		px.fill(color)
 		self.previewPanel.setIcon(QtGui.QIcon(px))
 
 	def color(self):
 		return self._color
-	
+
 	def setColor(self, color):
 		self._color = color
 		self.colorChanged.emit(color)
