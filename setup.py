@@ -15,19 +15,19 @@ DESCRIPTION='A small PyQt color picker widget (can be run on its own)'
 PAGE='https://github.com/ShadowKyogre/slickpicker'
 
 if sys.version_info < (3,0,0):
-	print("Python 3.x is required!",file=sys.stderr)
-	exit(1)
+    print("Python 3.x is required!",file=sys.stderr)
+    exit(1)
 
 setup(
-	name = APPNAME,
-	version = APPVERSION,
-	author = AUTHOR,
-	author_email = EMAIL,
-	description = DESCRIPTION,
-	url = PAGE,
-	license = "GPLv3",
-	requires=['PyQt5'],
-	py_modules = ['slickpicker'],
-	scripts=['slickpicker']
+    name = APPNAME,
+    version = APPVERSION,
+    author = AUTHOR,
+    author_email = EMAIL,
+    description = DESCRIPTION,
+    url = PAGE,
+    license = "GPLv3",
+    requires=['PyQt5'],
+    py_modules = ['slickpicker'],
+    scripts=['slickpicker']
 )
 
